@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sunny Dance Radio Stars</title>
+
+  <!-- Handwritten Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap" rel="stylesheet" />
+ <link rel="stylesheet" type="text/css" href="style.css">
+  <style>
+    /* Layout */
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    .page { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    h5.inch { margin: 0 0 1rem; font-size: 1.4rem; text-align: center; }
+    h5 .dark { color: #555; }
+
+    .gallery { display: grid; gap: 1.5rem; justify-content: center; }
+    @media (min-width: 640px) { .gallery { grid-template-columns: 1fr 1fr; } }
+
+    /* Figure + image */
+    .artist-card { position: relative; display: inline-block; text-align: center; width: 100%; }
+    .artist-card img { display: block; width: 100%; height: auto; border-radius: 8px; }
+
+    /* Caption base + animation */
+    .handwritten {
+      font-family: "Caveat", cursive;
+      font-size: 1.25rem;
+      margin-top: 0.4rem;
+
+      /* start hidden for animation */
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      color: #111; /* visible on light backgrounds (desktop) */
+    }
+    .handwritten.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Mobile overlay with z-index */
+    @media (max-width: 480px) {
+      .handwritten {
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translate(-50%, 10px);
+        font-size: 1rem;
+        background-color: rgba(0, 0, 0, 0.4);
+        color: #fff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        z-index: 10;
+        margin-top: 0;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      }
+      .handwritten.show {
+        transform: translate(-50%, 0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+  
+<br>
+
+
+    <div class="gallery">
+      <figure class="artist-card">
+        <img id="travolta" alt="Scheduled visual" />
+        <figcaption id="travolta-name" class="handwritten"></figcaption>
+      </figure>
+<br>
+<br>
+<br>
+      <figure class="artist-card">
+        <img id="max" alt="Secondary visual" />
+        <figcaption id="max-name" class="handwritten"></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Data ----------
+    const IMAGES = {
+      sunday: [
+        { start: 6,  end: 12, src: 'images/Ava Max.png',           alt: 'Sunday Service',             artist: 'Ava Max' },
+        { start: 12, end: 17, src: 'images/Bebe Rexha.png',        alt: 'Miss Monique (afternoon)',   artist: 'Bebe Rexha' },
+        { start: 17, end: 21, src: 'images/SG Lewis.jpg',          alt: 'DJ Set',                     artist: 'SG Lewis' },
+        { start: 21, end: 24, src: 'images/Bebe Rexha.png',        alt: 'Off-hours',                  artist: 'Bebe Rexha' },
+        { start: 0,  end: 6,  src: 'images/janelle monae.jpg',     alt: 'Off-hours',                  artist: 'Janelle Monáe' }
+      ],
+      weekendish: [
+        { start: 6,  end: 12, src: 'images/Ava Max.png',           alt: 'Sunday Service',             artist: 'Ava Max' },
+        { start: 12, end: 17, src: 'images/Bebe Rexha.png',        alt: 'Bebe Rexha',                 artist: 'Bebe Rexha' },
+        { start: 17, end: 21, src: 'images/SG Lewis.jpg',          alt: 'DJ Set',                     artist: 'SG Lewis' },
+        { start: 21, end: 24, src: 'images/Bebe Rexha.png',        alt: 'Off-hours',                  artist: 'Bebe Rexha' },
+        { start: 0,  end: 6,  src: 'images/janelle monae.jpg',     alt: 'Off-hours',                  artist: 'Janelle Monáe' }
+      ],
+      weekday: [
+        { start: 6,  end: 12, src: 'images/sexy.jpg',              alt: 'Sunday Service',             artist: 'Sex Fans' },
+        { start: 12, end: 17, src: 'images/The weeknd.png',        alt: 'The Weeknd',                 artist: 'The Weeknd' },
+        { start: 17, end: 21, src: 'images/Lola Young.avif',       alt: 'DJ Set',                     artist: 'Lola Young' },
+        { start: 21, end: 24, src: 'images/saweetie-portrait.avif',    alt: 'Off-hours',              artist: 'Saweetie' },
+        { start: 0,  end: 6,  src: 'images/Elderbrook Cola.jfif',  alt: 'Off-hours',                  artist: 'Elderbrook' }
+      ]
+    };
+
+    // ---------- Helpers ----------
+    function isSunday(d) { return d.getDay() === 0; }
+    function isWeekendish(d) {
+      const day = d.getDay();
+      const hour = d.getHours();
+      return day === 6 || (day === 5 && hour >= 18);
+    }
+    function getRulesFor(now) {
+      return isSunday(now) ? IMAGES.sunday : (isWeekendish(now) ? IMAGES.weekendish : IMAGES.weekday);
+    }
+    function getRuleFor(now) {
+      const hour = now.getHours();
+      return getRulesFor(now).find(r => hour >= r.start && hour < r.end);
+    }
+    function getComplementaryRule(now, excludeSrc) {
+      const rules = getRulesFor(now);
+      const currentIndex = rules.findIndex(r => r.src === excludeSrc);
+      if (currentIndex === -1) return getRuleFor(now);
+      const nextIndex = (currentIndex + 1) % rules.length;
+      return rules[nextIndex];
+    }
+    function preloadImages() {
+      // Safe preloading without Array.flat()
+      const groups = Object.keys(IMAGES);
+      for (const key of groups) {
+        const arr = IMAGES[key];
+        for (const r of arr) {
+          const i = new Image();
+          i.src = r.src;
+        }
+      }
+    }
+    function deriveArtistName(src) {
+      const filename = src.split('/').pop().replace(/\.[^.]+$/, '');
+      const cleaned = filename.replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+      return cleaned.replace(/\b\w/g, c => c.toUpperCase());
+    }
+    function getArtist(rule) {
+      return rule.artist || deriveArtistName(rule.src);
+    }
+
+    // ---------- Render ----------
+    function setImage(el, rule) {
+      if (!el || !rule) return;
+
+      const cap = document.getElementById(`${el.id}-name`);
+
+      // Only skip if both image AND caption are already correct
+      const capHasText = cap && cap.textContent && cap.textContent.length > 0;
+      if (el.dataset.currentSrc === rule.src && capHasText) return;
+
+      el.src = rule.src;
+      el.alt = rule.alt || '';
+      el.dataset.currentSrc = rule.src;
+
+      if (cap) {
+        cap.textContent = getArtist(rule);
+        // retrigger animation
+        cap.classList.remove('show');
+        void cap.offsetWidth; // force reflow to restart CSS transition
+        cap.classList.add('show');
+      }
+    }
+
+    function updateImages() {
+      const now = new Date();
+      const ruleTravolta = getRuleFor(now);
+      const ruleMax = getComplementaryRule(now, ruleTravolta.src);
+
+      setImage(document.getElementById('travolta'), ruleTravolta);
+      setImage(document.getElementById('max'), ruleMax);
+    }
+
+    function scheduleNextUpdate() {
+      const now = new Date();
+      const next = new Date(now);
+      next.setSeconds(0, 0);
+      if (now.getSeconds() !== 0 || now.getMilliseconds() !== 0) {
+        next.setMinutes(now.getMinutes() + 1);
+      }
+      const ms = next - now;
+      setTimeout(() => {
+        updateImages();
+        setInterval(updateImages, 60 * 1000);
+      }, ms);
+    }
+
+    // ---------- Init ----------
+    window.addEventListener('DOMContentLoaded', () => {
+      preloadImages();
+      updateImages();
+      scheduleNextUpdate();
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,92 @@
+body   {  
+
+background-color: transparent;
+}
+
+
+
+
+
+
+
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 5px #4773A9; }
+  50% { box-shadow: 0 0 20px #4773A9; }
+  100% { box-shadow: 0 0 5px #4773A9; }
+}
+
+
+
+.artist-card {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+  text-align: center;
+}
+
+
+.handwritten {
+  font-family: "Caveat", cursive;
+  font-size: 1.25rem; 
+  margin-top: 0.4rem; /* fallback if not overlaid */
+}
+
+@media (max-width: 520px) {
+  .handwritten {
+    position: absolute;
+    bottom: 5px;
+    
+    transform: translateX(-50%);
+    font-size: 1rem;
+    background-color: rgba(0, 0, 0, 0.4); /* subtle background for contrast */
+    color: white;
+    padding: 2px 4px;
+    border-radius: 4px;
+    z-index: -200; /* sits above the image */
+    margin-top: 0; /* remove normal gap */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8); /* keeps it readable on busy images */
+  }
+}
+
+
+
+#travolta {
+  /* The image used */
+ /* Used if the image is unavailable */
+/* You must set a specified height */
+ 
+
+
+background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+filter:opacity(20%); display: block; margin: auto auto auto auto; z-index: -200; border-radius:10px;
+width: 355px; height: 370px;
+}
+
+/* For small screens, adjust position or swap image */
+@media (max-width: 600px) {
+  .hero {
+    background-position: top center; /* show more of the top on phones */
+    /* or use a different, mobile‑optimized image */
+    background-image: url('images/your-pic-mobile.jpg');
+  }
+}
+
+#max{
+
+
+  /* The image used */
+ /* Used if the image is unavailable */
+/* You must set a specified height */
+ 
+
+
+background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+filter:opacity(20%); display: block; margin: auto auto auto auto; z-index: -200; border-radius:10px;
+width: 355px; height: 370px;
+}
+
